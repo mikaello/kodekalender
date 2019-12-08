@@ -14,6 +14,11 @@ type operations =
   | ROTERALLE
   | STOPP;
 
+type numberlist = {
+  numbers: list(int),
+  negative: bool,
+};
+
 type wheel = (operations, operations, operations, operations);
 
 type machineType = list(wheel);
@@ -33,29 +38,138 @@ let machine: machineType = [
 
 let getLastDigit = number => number mod 10;
 
-let getOperationFromMachine = (machine: machineType, wheel) => {
+let (/-) = (oper1, oper2) =>
+  float_of_int(oper1) /. float_of_int(oper2) |> floor |> int_of_float;
+
+let getOperationFromMachine = (machine, wheel) => {
   let (op, _, _, _) = List.nth(machine, wheel);
   op;
 };
 
+let up7 = number => {
+  let rec fn = number' =>
+    if (getLastDigit(number') == 7) {
+      number';
+    } else {
+      fn(number' + 1);
+    };
+
+  fn(number);
+};
+
+let turnWheel = ((a, b, c, d): wheel) => (b, c, d, a);
+
+let turnWheelAtIndex = (machine, index) =>
+  machine
+  |> List.mapi((machineIndex, wheel) =>
+       if (machineIndex == index) {
+         turnWheel(wheel);
+       } else {
+         wheel;
+       }
+     );
+
+let turnEven = machine =>
+  machine
+  |> List.mapi((index, wheel) =>
+       if (index mod 2 == 0) {
+         turnWheel(wheel);
+       } else {
+         wheel;
+       }
+     );
+
+let turnOdd = machine =>
+  machine
+  |> List.mapi((index, wheel) =>
+       if (index mod 2 != 0) {
+         turnWheel(wheel);
+       } else {
+         wheel;
+       }
+     );
+
+let getNumberList = number => {
+  let rec fn = (number', numbers) =>
+    if (number' == 0) {
+      numbers;
+    } else {
+      fn(number' / 10, [number' mod 10, ...numbers]);
+    };
+
+  fn(number, []);
+};
+
+let numberFromNumberList = numbers => {
+  let rec fn = (numbers, factor, sum) =>
+    switch (numbers) {
+    | [head, ...tail] => fn(tail, factor * 10, sum + head * factor)
+    | [] => sum
+    };
+
+  fn(List.rev(numbers), 1, 0);
+};
+
+let reverseDigit = number =>
+  getNumberList(number) |> List.rev |> numberFromNumberList;
+                                                            /*
+                                                             let stringInt = number |> string_of_int;
+                                                             let intLength = String.length(stringInt);
+                                                             let switchIndex = (index, _) =>
+                                                               String.unsafe_get(stringInt, intLength - 1 - index);
+
+                                                             String.mapi(switchIndex, stringInt) |> int_of_string;
+                                                             */
+
+let subtractOddNumbers = number =>
+  getNumberList(number)
+  |> List.map(num =>
+       if (num mod 2 != 0) {
+         num - 1;
+       } else {
+         num;
+       }
+     )
+  |> numberFromNumberList;
+
+let addEvenNumbers = number =>
+  getNumberList(number)
+  |> List.map(num =>
+       if (num mod 2 == 0) {
+         num + 1;
+       } else {
+         num;
+       }
+     )
+  |> numberFromNumberList;
+
 let runMachine = (machine, startAmount) => {
-  let rec run = (machine', currentAmount) =>
-    switch (getLastDigit(currentAmount) |> getOperationFromMachine(machine')) {
-    | PLUSS4
-    | PLUSS101 => run(machine', currentAmount + 101)
-    | MINUS9 => run(machine', currentAmount - 9)
-    | MINUS1 => run(machine', currentAmount - 1)
-    | REVERSERSIFFER => run(machine', currentAmount)
-    | OPP7 => run(machine', currentAmount)
-    | GANGEMSD => run(machine', currentAmount)
-    | DELEMSD => run(machine', currentAmount)
-    | PLUSS1TILPAR => run(machine', currentAmount)
-    | TREKK1FRAODDE => run(machine', currentAmount)
-    | ROTERPAR => run(machine', currentAmount)
-    | ROTERODDE => run(machine', currentAmount)
-    | ROTERALLE => run(machine', currentAmount)
+  let rec run = (machine', currentAmount) => {
+    let currentWheel = getLastDigit(currentAmount);
+    let nextMachine = turnWheelAtIndex(machine', currentWheel);
+
+    switch (getOperationFromMachine(machine', currentWheel)) {
+    | PLUSS4 => run(nextMachine, currentAmount + 4)
+    | PLUSS101 => run(nextMachine, currentAmount + 101)
+    | MINUS9 => run(nextMachine, currentAmount - 9)
+    | MINUS1 => run(nextMachine, currentAmount - 1)
+    | REVERSERSIFFER => run(nextMachine, reverseDigit(currentAmount))
+    | OPP7 => run(nextMachine, up7(currentAmount))
+    | GANGEMSD =>
+      run(nextMachine, currentAmount * getLastDigit(currentAmount))
+    | DELEMSD =>
+      run(nextMachine, currentAmount /- getLastDigit(currentAmount))
+    | PLUSS1TILPAR => run(nextMachine, addEvenNumbers(currentAmount))
+    | TREKK1FRAODDE => run(nextMachine, subtractOddNumbers(currentAmount))
+    | ROTERPAR => run(turnEven(nextMachine), currentAmount)
+    | ROTERODDE => run(turnOdd(nextMachine), currentAmount)
+    | ROTERALLE => run(List.map(turnWheel, nextMachine), currentAmount)
     | STOPP => currentAmount
     };
+  };
 
   run(machine, startAmount);
 };
+
+/*Array.map(runMachine(machine), [|1,2,3,4,5,6,7,8,9,10|]) |> Js.log */
+runMachine(machine, 3) |> Js.log;
