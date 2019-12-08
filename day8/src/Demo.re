@@ -38,6 +38,9 @@ let machine: machineType = [
 
 let getLastDigit = number => number mod 10;
 
+let getFirstDigit = number =>
+  (number |> abs |> string_of_int)->String.sub(0, 1) |> int_of_string;
+
 let (/-) = (oper1, oper2) =>
   float_of_int(oper1) /. float_of_int(oper2) |> floor |> int_of_float;
 
@@ -48,7 +51,7 @@ let getOperationFromMachine = (machine, wheel) => {
 
 let up7 = number => {
   let rec fn = number' =>
-    if (getLastDigit(number') == 7) {
+    if (getLastDigit(number') |> abs == 7) {
       number';
     } else {
       fn(number' + 1);
@@ -112,14 +115,6 @@ let numberFromNumberList = numbers => {
 
 let reverseDigit = number =>
   getNumberList(number) |> List.rev |> numberFromNumberList;
-                                                            /*
-                                                             let stringInt = number |> string_of_int;
-                                                             let intLength = String.length(stringInt);
-                                                             let switchIndex = (index, _) =>
-                                                               String.unsafe_get(stringInt, intLength - 1 - index);
-
-                                                             String.mapi(switchIndex, stringInt) |> int_of_string;
-                                                             */
 
 let subtractOddNumbers = number =>
   getNumberList(number)
@@ -145,7 +140,7 @@ let addEvenNumbers = number =>
 
 let runMachine = (machine, startAmount) => {
   let rec run = (machine', currentAmount) => {
-    let currentWheel = getLastDigit(currentAmount);
+    let currentWheel = getLastDigit(currentAmount) |> abs;
     let nextMachine = turnWheelAtIndex(machine', currentWheel);
 
     switch (getOperationFromMachine(machine', currentWheel)) {
@@ -156,9 +151,9 @@ let runMachine = (machine, startAmount) => {
     | REVERSERSIFFER => run(nextMachine, reverseDigit(currentAmount))
     | OPP7 => run(nextMachine, up7(currentAmount))
     | GANGEMSD =>
-      run(nextMachine, currentAmount * getLastDigit(currentAmount))
+      run(nextMachine, currentAmount * getFirstDigit(currentAmount))
     | DELEMSD =>
-      run(nextMachine, currentAmount /- getLastDigit(currentAmount))
+      run(nextMachine, currentAmount /- getFirstDigit(currentAmount))
     | PLUSS1TILPAR => run(nextMachine, addEvenNumbers(currentAmount))
     | TREKK1FRAODDE => run(nextMachine, subtractOddNumbers(currentAmount))
     | ROTERPAR => run(turnEven(nextMachine), currentAmount)
@@ -171,5 +166,6 @@ let runMachine = (machine, startAmount) => {
   run(machine, startAmount);
 };
 
-/*Array.map(runMachine(machine), [|1,2,3,4,5,6,7,8,9,10|]) |> Js.log */
-runMachine(machine, 3) |> Js.log;
+List.map(runMachine(machine), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+|> List.fold_left(max, 0)
+|> Js.log;
