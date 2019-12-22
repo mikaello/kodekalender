@@ -17,14 +17,18 @@ Arthur har følgande strategi:
 Isaac programerar sin identisk, bortsett frå at roboten hans prioriterar å
 besøke nye rom i rekkefølga høgre, nedover, venstre, oppover
 
-Eit enkelt rom i labyrinten har følgande eigenskapar: _ x - x-posisjon i
-labyrinten _ y - y-posisjon i labyrinten _ top - `true` om romet er stengt av
-ein vegg i retning oppover. `false` om det er passasje til tilstøytande rom. _
-left - `true` om romet er stengt av ein vegg i retning venstre. `false` om det
-er passasje til tilstøytande rom. _ bottom - `true` om romet er stengt av ein
-vegg i retning nedover. `false` om det er passasje til tilstøytande rom. _
-right - `true` om romet er stengt av ein vegg i retning høgre. `false` om det er
-passasje til tilstøytande rom.
+Eit enkelt rom i labyrinten har følgande eigenskapar:
+
+- x - x-posisjon i labyrinten
+- y - y-posisjon i labyrinten
+- top - `true` om romet er stengt av ein vegg i retning oppover. `false` om det
+  er passasje til tilstøytande rom.
+- left - `true` om romet er stengt av ein vegg i retning venstre. `false` om det
+  er passasje til tilstøytande rom.
+- bottom - `true` om romet er stengt av ein vegg i retning nedover. `false` om
+  det er passasje til tilstøytande rom.
+- right - `true` om romet er stengt av ein vegg i retning høgre. `false` om det
+  er passasje til tilstøytande rom.
 
 # Spørsmål
 
