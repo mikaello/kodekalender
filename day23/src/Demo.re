@@ -18,12 +18,10 @@ let isHashadPrime = num =>
   |> (sum => num mod sum == 0 && isPrime(sum));
 
 let getNumberOfHashadPrimes = stop => {
-  let count = ref(1); // 2 is a hashad prime
+  let count = ref(1); /* 2 is a hashad prime */
   for (i in 3 to stop) {
-    if (i mod 2 == 1) {
-      if (isHashadPrime(i)) {
-        count := count^ + 1;
-      };
+    if (isHashadPrime(i)) {
+      count := count^ + 1;
     };
   };
 
@@ -33,5 +31,10 @@ let getNumberOfHashadPrimes = stop => {
 Js.log(getNumberOfHashadPrimes(98765432));
 
 /*
-    Hashad numbers: https://oeis.org/wiki/Harshad_numbers
-*/
+     Hashad numbers: https://oeis.org/wiki/Harshad_numbers
+
+     Optimalisering:
+     Det er egentlig bare veldig få primtall som brukes (bare 69 og nedover),
+     så det hadde egentlig holdt å hardkode disse og sjekke om tallet er et av
+     disse
+ */

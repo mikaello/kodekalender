@@ -16,6 +16,12 @@ describe("truthy hashadPrime", () => {
   test("7", () =>
     expect(isHashadPrime(7)) |> toBe(true)
   );
+  test("12", () =>
+    expect(isHashadPrime(12)) |> toBe(true)
+  );
+  test("20", () =>
+    expect(isHashadPrime(20)) |> toBe(true)
+  );
   test("200", () =>
     expect(isHashadPrime(200)) |> toBe(true)
   );
