@@ -15,6 +15,7 @@
     "bs-platform": "~8.2"
   },
   "dependencies": {
+    "nodemon": "^2.0.6",
     "tablecloth-bucklescript": "0.0.7"
   }
 }
