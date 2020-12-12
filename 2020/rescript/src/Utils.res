@@ -13,8 +13,10 @@ let readFileLineRange = (~from, ~to_=?, filename) => {
   }
 }
 
-let stringToArray = s => s->Js.String2.split("")
+let stringToArray = s => s->Js.String2.castToArrayLike->Js.Array2.fromMap(x => x)
 let stringToList = s => s->stringToArray->Array.to_list
+
+let arrayToString = arr => Js.String.concatMany(arr, "")
 
 let teeLog = s => {
   Js.log(s)
